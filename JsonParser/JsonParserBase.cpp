@@ -15,7 +15,7 @@ JsonValue JsonParserBase::parse(char* json)
 
     jsmnerr_t status = jsmn_parse(&parser, json, tokens, maxTokens);
 
-    #ifdef DEBUG
+    #ifdef SPARK_DEBUG
     Serial.print("JSON parse status: ");
     Serial.println(status);
     #endif
