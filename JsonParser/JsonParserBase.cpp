@@ -3,6 +3,7 @@
 * Benoit Blanchon 2014 - MIT License
 */
 
+#include "LightTimerIncludes.h"
 #include "JsonParserBase.h"
 #include "JsonToken.h"
 

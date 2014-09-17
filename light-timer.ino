@@ -1,7 +1,5 @@
-#define SPARK_DEBUG
-
-#include "rest_client.h"
 #include "LightTimer.h"
+#include <math.h>
 
 const int outletSwitchPin = D7;
 #ifdef SPARK_DEBUG
@@ -16,6 +14,7 @@ const String timerOffTime = "23:59";
 const int timezoneOffset = -5; // EST
 
 LightTimer timer;
+char* currentState = "tmp";
 
 void setup()
 {
@@ -23,9 +22,12 @@ void setup()
     timer.setOutletSwitchPin(outletSwitchPin);
     timer.setSunsetApiUrl(weatherApiBaseUrl, sunsetApiUrl);
     timer.setSunsetApiCheckTime(sunsetApiCheckTime);
-    timer.setTimerOffTime(timerOffTime);
+    timer.setOutletSwitchOffTime(timerOffTime);
+    timer.setTimezoneOffset(timezoneOffset);
 
-    Spark.function("outletControl", outletControl);
+    Spark.function("configure", configureHandler);
+    Spark.function("identify", identifyHandler);
+    // Spark.variable("current", currentState, STRING);
 
     #ifdef SPARK_DEBUG
     Serial.begin(9600);
@@ -54,39 +56,38 @@ void loop()
     // Turn off the outlet switch if it's time.
     timer.toggleOutletSwitchOff();
 
+    // TODO: This fails to get set correctly
+    // timer.getCurrentState(currentState);
+
+    DEBUG_PRINT(currentState);
+
     delay(5000);
 }
 
-// Outlet control handler.
-int outletControl(String command)
+int configureHandler(String command)
 {
-    #ifdef SPARK_DEBUG
-    Serial.println("Outlet Control API request received...");
-    #endif
+    return timer.configureHandler(command);
+}
 
-    bool enable = (command == "true" ||
-        command == "1" ||
-        command == "enable");
-    bool disable = (command == "false" ||
-        command == "0" ||
-        command == "disable");
+int identifyHandler(String command)
+{
+    RGB.control(true);
 
-    if (enable)
+    // Make it rainbow!
+    // http://krazydad.com/tutorials/makecolors.php
+    double frequency = 2 * 3.14 / 6;
+    int r, g, b;
+
+    for (int i = 0; i < 92; ++i)
     {
-        #ifdef SPARK_DEBUG
-        Serial.println("Enabling outlet switch...");
-        #endif
-        timer.toggleOutletSwitch(true);
-        return 1;
-    }
-    else if (disable)
-    {
-        #ifdef SPARK_DEBUG
-        Serial.println("Disabling outlet switch...");
-        #endif
-        timer.toggleOutletSwitch(off);
-        return 1;
+        r = sin(frequency * i + 0) * 127 + 128;
+        g = sin(frequency * i + 2) * 127 + 128;
+        b = sin(frequency * i + 4) * 127 + 128;
+        RGB.color(r,g,b);
+        delay(50);
     }
 
-    return -1;
+    RGB.control(false);
+
+    return 1;
 }

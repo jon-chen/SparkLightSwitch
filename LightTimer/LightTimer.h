@@ -1,5 +1,4 @@
-#include "application.h"
-#include "SparkTime.h"
+#include "LightTimerIncludes.h"
 
 class LightTimer
 {
@@ -20,7 +19,11 @@ class LightTimer
         void setSunsetApiCheckTime(String timeString);
 
         // Initalize when the app turns off the outlet switch.
-        void setTimerOffTime(String timeString);
+        void setOutletSwitchOffTime(String timeString);
+
+        void getCurrentState(char* currentState);
+
+        int configureHandler(String command);
 
         // Check to see if the outlet switch needs to be turned on. If so,
         // turn it on!
@@ -88,6 +91,24 @@ class LightTimer
 
         // A day in milliseconds.
         const unsigned long dayInMilliseconds = (24 * 60 * 60 * 1000);
+
+        enum LightTimerConfig
+        {
+            OutletSwitchState = 0,
+            TimezoneOffset,
+            SunsetApiUrl,
+            SunsetApiCheckTime,
+            OutletSwitchOffTime
+        };
+
+        const char* configKeys[5] =
+        {
+            "OutletSwitchState",
+            "TimezoneOffset",
+            "SunsetApiUrl",
+            "SunsetApiCheckTime",
+            "OutletSwitchOffTime"
+        };
 
         // Retrieve the sunset data from the API and parse it into
         // a unix timestamp.

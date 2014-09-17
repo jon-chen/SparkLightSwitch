@@ -1,3 +1,4 @@
+
 {
   "response": {
   "version":"0.1",
@@ -7,31 +8,31 @@
   }
 	}
 		,	"moon_phase": {
-		"percentIlluminated":"73",
-		"ageOfMoon":"20",
-		"phaseofMoon":"Waning Gibbous",
+		"percentIlluminated":"41",
+		"ageOfMoon":"23",
+		"phaseofMoon":"Last Quarter",
 		"hemisphere":"North",
 		"current_time": {
-		"hour":"15",
-		"minute":"02"
+		"hour":"19",
+		"minute":"09"
 		},
 		"sunrise": {
 		"hour":"7",
-		"minute":"19"
+		"minute":"21"
 		},
 		"sunset": {
 		"hour":"19",
-		"minute":"46"
+		"minute":"42"
 		}
 	},
 	"sun_phase": {
 		"sunrise": {
 		"hour":"7",
-		"minute":"19"
+		"minute":"21"
 		},
 		"sunset": {
 		"hour":"19",
-		"minute":"46"
+		"minute":"42"
 		}
 	}
 }

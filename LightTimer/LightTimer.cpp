@@ -1,14 +1,5 @@
 #include "LightTimer.h"
-#include "rest_client.h"
-#include "JsonParser.h"
-
-#ifdef SPARK_DEBUG
-#define DEBUG_PRINT(string) (Serial.print(string))
-#endif
-
-#ifndef SPARK_DEBUG
-#define DEBUG_PRINT(string)
-#endif
+using namespace ArduinoJson::Parser;
 
 LightTimer::LightTimer()
 {
@@ -30,6 +21,8 @@ void LightTimer::setTimezoneOffset(int offset)
     bool isDst = rtc.isUSDST(Time.now());
     timezoneOffset = (isDst ? offset + 1 : offset);
     Time.zone(timezoneOffset);
+    // Build in some delay to make sure that the timezone gets set properly.
+    delay(500);
 }
 
 void LightTimer::setSunsetApiUrl(String baseUrl, String apiUrl)
@@ -43,9 +36,59 @@ void LightTimer::setSunsetApiCheckTime(String timeString)
     sunsetApiCheckTime = timeString;
 }
 
-void LightTimer::setTimerOffTime(String timeString)
+void LightTimer::setOutletSwitchOffTime(String timeString)
 {
     timerOffTime = timeString;
+}
+
+void LightTimer::getCurrentState(char* currentState)
+{
+    String str = Time.timeStr();
+    strncpy(currentState, str.c_str(), sizeof(str));
+}
+
+int LightTimer::configureHandler(String command)
+{
+    #ifdef SPARK_DEBUG
+    Serial.println("Outlet Control API request received...");
+    #endif
+
+    JsonParser<64> parser;
+    JsonObject root = parser.parse(const_cast<char*>(command.c_str()));
+
+    JsonValue value;
+    value = root[configKeys[OutletSwitchState]];
+    if (&value != NULL)
+    {
+        toggleOutletSwitch(value);
+    }
+
+    value = root[configKeys[TimezoneOffset]];
+    if (&value != NULL)
+    {
+        setTimezoneOffset(value);
+    }
+
+    value = root[configKeys[SunsetApiUrl]];
+    if (&value != NULL)
+    {
+        // TODO: Split the url into the base and relative url
+        // setSunsetApiUrl
+    }
+
+    value = root[configKeys[SunsetApiCheckTime]];
+    if (&value != NULL)
+    {
+        setSunsetApiCheckTime((const char*)value);
+    }
+
+    value = root[configKeys[OutletSwitchOffTime]];
+    if (&value != NULL)
+    {
+        setOutletSwitchOffTime((const char*)value);
+    }
+
+    return 1;
 }
 
 void LightTimer::toggleOutletSwitchOn()
@@ -114,7 +157,7 @@ bool LightTimer::shouldOutletSwitchBeEnabled()
     time_t lightOn = sunsetTime;
     time_t lightOff = LightTimer::parseTimeFromString(timerOffTime.c_str());
 
-    return  (now < lightOn) && (now > lightOff);
+    return  (now > lightOn) && (now < lightOff);
 }
 
 void LightTimer::syncTime()
@@ -142,7 +185,7 @@ void LightTimer::retrieveSunsetData()
     // minute, or if we've never retrieved the sunset data yet.
     if ((Time.hour() == checkHour && Time.minute() == checkMinute &&
         now / (1000 * 60) != lastSunsetApiCheckTime / (1000 * 60)) ||
-        lastSunsetApiCheckTime == NULL)
+        &lastSunsetApiCheckTime == NULL)
     {
         DEBUG_PRINT("Retrieving sunset data... ");
         DEBUG_PRINT(Time.timeStr() + "\n");
@@ -153,6 +196,7 @@ void LightTimer::retrieveSunsetData()
             DEBUG_PRINT("Sunset data retrieved! ");
             DEBUG_PRINT(Time.timeStr() + "\n");
             DEBUG_PRINT("Sunset is at: ");
+            DEBUG_PRINT(Time.timeStr(time) + " ");
             DEBUG_PRINT(time);
             DEBUG_PRINT("\n");
 
@@ -170,7 +214,6 @@ void LightTimer::retrieveSunsetData()
 
 time_t LightTimer::getAndParseSunsetData()
 {
-    using namespace ArduinoJson::Parser;
     const char* response = getSunsetDataResponse();
 
     // Parse response if we have one.

@@ -22,5 +22,6 @@ JsonParser/JsonValue.h
 JsonParser/JsonValue.cpp
 LightTimer/LightTimer.h
 LightTimer/LightTimer.cpp
+LightTimer/LightTimerIncludes.h
 SparkTime/SparkTime.h
 SparkTime/SparkTime.cpp
