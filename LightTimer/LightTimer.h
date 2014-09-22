@@ -6,6 +6,10 @@ class LightTimer
         // Constructor.
         LightTimer();
 
+        // Method that configures the initial state of the app. This method
+        // assumes that the parameters have been configured previously.
+        void initialize();
+
         // Initailize the pin used to control the outlet switch.
         void setOutletSwitchPin(int pin);
 
@@ -18,11 +22,19 @@ class LightTimer
         // Initialize when the app checks for sunset data.
         void setSunsetApiCheckTime(String timeString);
 
+        // Initialize when teh app turns on the outlet switch.
+        void setOutletSwitchOnTime(String timeString);
+
         // Initalize when the app turns off the outlet switch.
         void setOutletSwitchOffTime(String timeString);
 
+        // Gets the current state of the app and sets the string variable
+        // passed in to the method.
         void getCurrentState(char* currentState);
 
+        // Accepts a JSON string and parses out configuration options that
+        // can be set remotely. See configKeys for a list of settings that
+        // can be configured.
         int configureHandler(String command);
 
         // Check to see if the outlet switch needs to be turned on. If so,
@@ -76,8 +88,11 @@ class LightTimer
         // When the app checks for sunset data.
         String sunsetApiCheckTime;
 
+        // When the app turns on the outlet switch.
+        String outletSwitchOnTime;
+
         // When the app turns off the outlet switch.
-        String timerOffTime;
+        String outletSwitchOffTime;
 
         // Pin used to control whether the outlet switch is enabled or not.
         int outletSwitchPin;
@@ -117,11 +132,17 @@ class LightTimer
         // Retrieve the sunset data from the API.
         const char* getSunsetDataResponse();
 
+        bool useSunsetOnTime();
+
+        time_t getOutletSwitchOffTime();
+
+        time_t getOutletSwitchOnTime();
+
         // Parse the time into a unix timestamp.
-        static time_t parseTimeFromToday(int hour, int minute);
+        static time_t parseTimeFromToday(int hour, int minute, int offset);
 
         // Parse the time from a string to a unix timestamp.
-        static time_t parseTimeFromString(const char* data);
+        static time_t parseTimeFromString(const char* data, int offset);
 
         // Parses a time out of the string in the format h:mm
         static void parseTime(const char* data, int* hour, int* minute);

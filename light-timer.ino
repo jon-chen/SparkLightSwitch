@@ -10,7 +10,8 @@ const String weatherApiBaseUrl = "api.wunderground.com";
 const String sunsetApiUrl = "/api/91329161b08b1483/astronomy/q/30329.json";
 #endif
 const String sunsetApiCheckTime = "15:00";
-const String timerOffTime = "23:59";
+const String outletSwitchOnTime = "sunset";
+const String outletSwitchOffTime = "23:59";
 const int timezoneOffset = -5; // EST
 
 LightTimer timer;
@@ -22,7 +23,8 @@ void setup()
     timer.setOutletSwitchPin(outletSwitchPin);
     timer.setSunsetApiUrl(weatherApiBaseUrl, sunsetApiUrl);
     timer.setSunsetApiCheckTime(sunsetApiCheckTime);
-    timer.setOutletSwitchOffTime(timerOffTime);
+    timer.setOutletSwitchOnTime(outletSwitchOnTime);
+    timer.setOutletSwitchOffTime(outletSwitchOffTime);
     timer.setTimezoneOffset(timezoneOffset);
 
     Spark.function("configure", configureHandler);
@@ -37,9 +39,11 @@ void setup()
         SPARK_WLAN_Loop();
     }
 
-    Serial.print("System started... ");
+    Serial.print("System started...");
     Serial.print(Time.timeStr());
     #endif
+
+    timer.initialize();
 }
 
 void loop()
@@ -57,11 +61,12 @@ void loop()
     timer.toggleOutletSwitchOff();
 
     // TODO: This fails to get set correctly
-    // timer.getCurrentState(currentState);
+    timer.getCurrentState(currentState);
 
-    DEBUG_PRINT(currentState);
+    // DEBUG_PRINT(currentState);
 
-    delay(5000);
+    // Wait 10 seconds
+    delay(10000);
 }
 
 int configureHandler(String command)
