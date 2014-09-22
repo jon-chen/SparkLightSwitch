@@ -107,6 +107,8 @@ class LightTimer
         // A day in milliseconds.
         const unsigned long dayInMilliseconds = (24 * 60 * 60 * 1000);
 
+        // Used by the code to pull out the right configuration key from
+        // the configKeys string array.
         enum LightTimerConfig
         {
             OutletSwitchState = 0,
@@ -116,6 +118,8 @@ class LightTimer
             OutletSwitchOffTime
         };
 
+        // Configuration keys for the JSON object used to configure settings
+        // remotely.
         const char* configKeys[5] =
         {
             "OutletSwitchState",
@@ -132,10 +136,15 @@ class LightTimer
         // Retrieve the sunset data from the API.
         const char* getSunsetDataResponse();
 
+        // True if the app should turn on the outlet switch by using the
+        // sunset time or if it should use a time specified by the
+        // configuration.
         bool useSunsetOnTime();
 
+        // Gets the switch off time as a Unix timestamp.
         time_t getOutletSwitchOffTime();
 
+        // Gets the switch on time as a Unix timestamp.
         time_t getOutletSwitchOnTime();
 
         // Parse the time into a unix timestamp.
