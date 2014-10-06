@@ -1,5 +1,6 @@
+#include "SparkDebug.h"
+#include "Sparky.h"
 #include "LightTimer.h"
-#include <math.h>
 
 const int outletSwitchPin = D7;
 #ifdef SPARK_DEBUG
@@ -14,18 +15,28 @@ const String outletSwitchOnTime = "sunset";
 const String outletSwitchOffTime = "23:59";
 const int timezoneOffset = -5; // EST
 
-LightTimer timer;
-char* currentState = "tmp";
+LightTimer* timer;
+SwitchSchedulerConfiguration* config = new SwitchSchedulerConfiguration();
+char* currentState;
 
 void setup()
 {
+    String astronomyApiUrl = "http://" + weatherApiBaseUrl + sunsetApiUrl;
+    config->AstronomyApiUrl = astronomyApiUrl;
+    config->AstronomyApiCheckTime = sunsetApiCheckTime;
+    config->TimezoneOffset = timezoneOffset;
+
+    timer = new LightTimer(config);
+
     // Initialize LightTimer.
-    timer.setOutletSwitchPin(outletSwitchPin);
-    timer.setSunsetApiUrl(weatherApiBaseUrl, sunsetApiUrl);
-    timer.setSunsetApiCheckTime(sunsetApiCheckTime);
-    timer.setOutletSwitchOnTime(outletSwitchOnTime);
-    timer.setOutletSwitchOffTime(outletSwitchOffTime);
-    timer.setTimezoneOffset(timezoneOffset);
+    timer->setOutletSwitchPin(outletSwitchPin);
+    // timer.setSunsetApiUrl(weatherApiBaseUrl, sunsetApiUrl);
+    // timer.setSunsetApiCheckTime(sunsetApiCheckTime);
+    // timer->setOutletSwitchOnTime(outletSwitchOnTime);
+    // timer->setOutletSwitchOffTime(outletSwitchOffTime);
+    // timer.setTimezoneOffset(timezoneOffset);
+
+    timer->AddSchedule(new SwitchSchedulerTask(outletSwitchOnTime, outletSwitchOffTime));
 
     Spark.function("configure", configureHandler);
     Spark.function("identify", identifyHandler);
@@ -43,25 +54,24 @@ void setup()
     Serial.print(Time.timeStr());
     #endif
 
-    timer.initialize();
+    timer->Initialize();
 }
 
 void loop()
 {
-    // Sync the time daily.
-    timer.syncTime();
+    timer->Tick();
 
-    // Try to get the sunset data if it's time.
-    timer.retrieveSunsetData();
+    // // Try to get the sunset data if it's time.
+    // timer.retrieveSunsetData();
 
     // Turn on the outlet switch if it's time.
-    timer.toggleOutletSwitchOn();
+    // timer->toggleOutletSwitchOn();
 
     // Turn off the outlet switch if it's time.
-    timer.toggleOutletSwitchOff();
+    // timer->toggleOutletSwitchOff();
 
     // TODO: This fails to get set correctly
-    timer.getCurrentState(currentState);
+    // timer->getCurrentState(currentState);
 
     // DEBUG_PRINT(currentState);
 
@@ -71,28 +81,11 @@ void loop()
 
 int configureHandler(String command)
 {
-    return timer.configureHandler(command);
+    return timer->configureHandler(command);
 }
 
 int identifyHandler(String command)
 {
-    RGB.control(true);
-
-    // Make it rainbow!
-    // http://krazydad.com/tutorials/makecolors.php
-    double frequency = 2 * 3.14 / 6;
-    int r, g, b;
-
-    for (int i = 0; i < 92; ++i)
-    {
-        r = sin(frequency * i + 0) * 127 + 128;
-        g = sin(frequency * i + 2) * 127 + 128;
-        b = sin(frequency * i + 4) * 127 + 128;
-        RGB.color(r,g,b);
-        delay(50);
-    }
-
-    RGB.control(false);
-
+    Sparky::DoTheRainbow();
     return 1;
 }

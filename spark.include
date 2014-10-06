@@ -1,6 +1,5 @@
 light-timer.ino
-rest_client.h
-rest_client.cpp
+SparkDebug.h
 DNSClient/DNSClient.h
 DNSClient/DNSClient.cpp
 DNSClient/myUDP.h
@@ -22,6 +21,12 @@ JsonParser/JsonValue.h
 JsonParser/JsonValue.cpp
 LightTimer/LightTimer.h
 LightTimer/LightTimer.cpp
-LightTimer/LightTimerIncludes.h
+RestClient/rest_client.h
+RestClient/rest_client.cpp
 SparkTime/SparkTime.h
 SparkTime/SparkTime.cpp
+Sparky/Sparky.h
+Sparky/Sparky.cpp
+SwitchScheduler/SwitchScheduler.h
+SwitchScheduler/SwitchScheduler.cpp
+Uri/Uri.h

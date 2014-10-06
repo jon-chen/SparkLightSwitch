@@ -3,7 +3,7 @@
 * Benoit Blanchon 2014 - MIT License
 */
 
-#include "LightTimerIncludes.h"
+#include "SparkDebug.h"
 #include "JsonParserBase.h"
 #include "JsonToken.h"
 
@@ -16,10 +16,9 @@ JsonValue JsonParserBase::parse(char* json)
 
     jsmnerr_t status = jsmn_parse(&parser, json, tokens, maxTokens);
 
-    #ifdef SPARK_DEBUG
-    Serial.print("JSON parse status: ");
-    Serial.println(status);
-    #endif
+    DEBUG_PRINT("JSON parse status: ");
+    DEBUG_PRINT(status);
+    DEBUG_PRINT("\n");
 
     if (JSMN_SUCCESS != status)
         return JsonToken::null();
