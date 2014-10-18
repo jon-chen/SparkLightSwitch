@@ -4,8 +4,6 @@
 #define URI_H_
 
 #include "application.h"
-// #include <string>
-// #include <algorithm>    // find
 
 struct Uri
 {
@@ -86,58 +84,6 @@ struct Uri
             }
 
             return result;
-
-            // iterator_t uriEnd = uri.end();
-            //
-            // // get query start
-            // iterator_t queryStart = std::find(uri.begin(), uriEnd, L'?');
-            //
-            // // protocol
-            // iterator_t protocolStart = uri.begin();
-            // iterator_t protocolEnd = std::find(protocolStart, uriEnd, L':');            //"://");
-            //
-            // if (protocolEnd != uriEnd)
-            // {
-            //     String prot = &*(protocolEnd);
-            //     if ((prot.length() > 3) && (prot.substr(0, 3) == L"://"))
-            //     {
-            //         result.Protocol = String(protocolStart, protocolEnd);
-            //         protocolEnd += 3;   //      ://
-            //     }
-            //     else
-            //         protocolEnd = uri.begin();  // no protocol
-            // }
-            // else
-            //     protocolEnd = uri.begin();  // no protocol
-            //
-            // // host
-            // iterator_t hostStart = protocolEnd;
-            // iterator_t pathStart = std::find(hostStart, uriEnd, L'/');  // get pathStart
-            //
-            // iterator_t hostEnd = std::find(protocolEnd,
-            //     (pathStart != uriEnd) ? pathStart : queryStart,
-            //     L':');  // check for port
-            //
-            // result.Host = String(hostStart, hostEnd);
-            //
-            // // port
-            // if ((hostEnd != uriEnd) && ((&*(hostEnd))[0] == L':'))  // we have a port
-            // {
-            //     hostEnd++;
-            //     iterator_t portEnd = (pathStart != uriEnd) ? pathStart : queryStart;
-            //     result.Port = std::wstring(hostEnd, portEnd);
-            // }
-            //
-            // // path
-            // if (pathStart != uriEnd)
-            //     result.Path = std::wstring(pathStart, queryStart);
-            //
-            // // query
-            // if (queryStart != uriEnd)
-            //     result.QueryString = std::wstring(queryStart, uri.end());
-            //
-            // return result;
-
         }   // Parse
 };  // uri
 

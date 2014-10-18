@@ -25,7 +25,7 @@ class LightTimer
 
         // Gets the current state of the app and sets the string variable
         // passed in to the method.
-        void getCurrentState(char* currentState);
+        const char* GetCurrentState();
 
         // Accepts a JSON string and parses out configuration options that
         // can be set remotely. See configKeys for a list of settings that
@@ -49,7 +49,7 @@ class LightTimer
         bool getOutletSwitchState();
 
         // Checks to see if the outlet switch should be toggled on.
-        bool shouldOutletSwitchBeEnabled();
+        // bool shouldOutletSwitchBeEnabled();
     private:
         SwitchScheduler* scheduler;
 
@@ -64,13 +64,15 @@ class LightTimer
         // time_t sunsetTime;
 
         // The last time the outlet switch was set to on.
-        time_t lastToggleOutletSwitchOnTime;
+        // time_t lastToggleOutletSwitchOnTime;
 
         // The last time the outlet switch was set to off.
-        time_t lastToggleOutletSwitchOffTime;
+        // time_t lastToggleOutletSwitchOffTime;
 
         // // The last time the sunset API was checked.
         // time_t lastSunsetApiCheckTime;
+
+        time_t lastToggleOutletSwitchTime;
 
         // When the app checks for sunset data.
         // String sunsetApiCheckTime;
@@ -119,8 +121,8 @@ class LightTimer
         // bool useSunsetOnTime();
 
         // Gets the switch off time as a Unix timestamp.
-        time_t getOutletSwitchOffTime();
+        // time_t getOutletSwitchOffTime();
 
         // Gets the switch on time as a Unix timestamp.
-        time_t getOutletSwitchOnTime();
+        // time_t getOutletSwitchOnTime();
 };

@@ -1,6 +1,8 @@
 #ifndef SPARKY_H_
 #define SPARKY_H_
 
+#define StringVariableMaxLength 622
+
 #include "application.h"
 
 class Sparky

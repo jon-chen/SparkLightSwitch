@@ -43,10 +43,19 @@ class SwitchScheduler
 
         bool IsUsingAstronomyData();
 
+        time_t GetSunriseTime();
+
+        time_t GetSunsetTime();
+
         unsigned long GetLastTimeSync();
 
         SwitchSchedulerConfiguration* GetConfiguration();
 
+        SwitchSchedulerTask** GetTasks();
+
+        int GetTasksLength();
+
+        bool ShouldBeEnabled();
 
         // Adds a task that the scheduler should keep track of.
         void AddSchedulerTask(SwitchSchedulerTask*);
@@ -64,14 +73,11 @@ class SwitchScheduler
         // The last time the time was sync'd.
         unsigned long lastTimeSync;
 
-        unsigned long lastCheckTask;
+        unsigned long lastLoopCheck;
 
-        unsigned long checkTaskInterval = (60 * 1000); // every 1 minute
+        unsigned long checkLoopInterval = (60 * 1000); // every 1 minute
 
         bool isUsingAstronomyData;
-
-        // The last time the sunset API was checked.
-        time_t lastAstronomyApiCheckTime;
 
         time_t sunriseTime;
 
@@ -104,7 +110,7 @@ class SwitchScheduler
         // Retrieve the sunset data from the API.
         const char* GetAstronomyDataResponse();
 
-        time_t GetTime(const char*);
+        time_t GetTime(String);
 };
 
 #endif // SWITCH_SCHEDULER_H_

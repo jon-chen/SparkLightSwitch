@@ -1,12 +1,6 @@
 #ifndef SPARK_DEBUG_H_
 #define SPARK_DEBUG_H_
 
-
-
-#define SPARK_DEBUG
-
-
-
 #ifdef SPARK_DEBUG
 #define DEBUG_PRINT(string) (Serial.print(string))
 #endif

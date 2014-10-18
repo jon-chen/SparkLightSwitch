@@ -59,7 +59,16 @@ bool SwitchScheduler::IsUsingAstronomyData()
     return isUsingAstronomyData;
 }
 
-// TODO: can we chang this to time_t?
+time_t SwitchScheduler::GetSunriseTime()
+{
+    return sunriseTime;
+}
+
+time_t SwitchScheduler::GetSunsetTime()
+{
+    return sunsetTime;
+}
+
 unsigned long SwitchScheduler::GetLastTimeSync()
 {
     return lastTimeSync;
@@ -70,11 +79,41 @@ SwitchSchedulerConfiguration* SwitchScheduler::GetConfiguration()
     return configuration;
 }
 
+SwitchSchedulerTask** SwitchScheduler::GetTasks()
+{
+    return tasks;
+}
+
+int SwitchScheduler::GetTasksLength()
+{
+    return tasksLength;
+}
+
+bool SwitchScheduler::ShouldBeEnabled()
+{
+    time_t now = Time.now();
+
+    for (int i = 0; i < tasksLength; i++)
+    {
+        time_t lightOn = GetTime(tasks[i]->StartTime);
+        time_t lightOff = GetTime(tasks[i]->EndTime);
+
+        if (now > lightOn && now < lightOff)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void SwitchScheduler::AddSchedulerTask(SwitchSchedulerTask* task)
 {
     // check to see if we need to retrieve astronomy data
-    if (task->StartTime == "sunrise" || task->StartTime == "sunset" ||
-        task->EndTime == "sunrise" || task->EndTime == "sunset")
+    if (task->StartTime == "sunrise" ||
+        task->StartTime == "sunset" ||
+        task->EndTime == "sunrise" ||
+        task->EndTime == "sunset")
     {
         isUsingAstronomyData = true;
     }
@@ -90,39 +129,39 @@ void SwitchScheduler::Tock()
         return;
     }
 
-    // Sync the time daily.
-    SyncTime();
+    unsigned long now = millis();
 
-    // Try to get the astronomy data if it's time.
-    RetrieveAstronomyData();
+    if (now - lastLoopCheck > checkLoopInterval ||
+        lastLoopCheck == 0)
+    {
+        // Sync the time daily.
+        SyncTime();
 
-    CheckSchedulerTasks();
+        // Try to get the astronomy data if it's time.
+        RetrieveAstronomyData();
+
+        CheckSchedulerTasks();
+
+        lastLoopCheck = now;
+    }
 }
 
 void SwitchScheduler::CheckSchedulerTasks()
 {
-    unsigned long now = millis();
+    DEBUG_PRINT("Checking scheduled tasks... ");
+    DEBUG_PRINT(Time.timeStr() + "\n");
 
-    if (now - lastCheckTask > checkTaskInterval)
+    for (int i = 0; i < tasksLength; i++)
     {
-        DEBUG_PRINT("Checking scheduled tasks... ");
-        DEBUG_PRINT(Time.timeStr() + "\n");
-
-        for (int i = 0; i < tasksLength; i++)
-        {
-            CheckSchedulerTask(tasks[i], tasks[i]->StartTime, StartEvent);
-            CheckSchedulerTask(tasks[i], tasks[i]->EndTime, EndEvent);
-        }
-
-        lastCheckTask = now;
+        CheckSchedulerTask(tasks[i], tasks[i]->StartTime, StartEvent);
+        CheckSchedulerTask(tasks[i], tasks[i]->EndTime, EndEvent);
     }
 }
 
 void SwitchScheduler::CheckSchedulerTask(SwitchSchedulerTask* task, String timeString, SwitchSchedulerEvent event)
 {
     int checkHour, checkMinute;
-    time_t now = Time.now();
-    time_t checkTime = GetTime(timeString.c_str());
+    time_t checkTime = GetTime(timeString);
     Sparky::ParseTimestamp(checkTime, &checkHour, &checkMinute);
 
     // If the check time has arrived and the last check time wasn't this
@@ -159,16 +198,14 @@ void SwitchScheduler::RetrieveAstronomyData()
     // Only retrieve sunset data if we actually need it.
     if (isUsingAstronomyData)
     {
-        time_t now = Time.now();
         int checkHour, checkMinute;
         Sparky::ParseTime((configuration->AstronomyApiCheckTime).c_str(),
             &checkHour, &checkMinute);
 
         // If the check time has arrived and the last check time wasn't this
         // minute, or if we've never retrieved the sunset data yet.
-        if ((Time.hour() == checkHour && Time.minute() == checkMinute &&
-            now / (1000 * 60) != lastAstronomyApiCheckTime / (1000 * 60)) ||
-            lastAstronomyApiCheckTime == 0)
+        if ((Time.hour() == checkHour && Time.minute() == checkMinute) ||
+            (sunriseTime == 0 || sunsetTime == 0))
         {
             DEBUG_PRINT("Retrieving sunset data... ");
             DEBUG_PRINT(Time.timeStr() + "\n");
@@ -177,8 +214,6 @@ void SwitchScheduler::RetrieveAstronomyData()
             {
                 DEBUG_PRINT("Sunset data retrieved! ");
                 DEBUG_PRINT(Time.timeStr() + "\n");
-
-                lastAstronomyApiCheckTime = now;
             }
             else
             {
@@ -227,12 +262,6 @@ const char* SwitchScheduler::GetAstronomyDataResponse()
 {
     Uri apiUri = Uri::Parse(configuration->AstronomyApiUrl);
 
-    DEBUG_PRINT(apiUri.Protocol + "\n");
-    DEBUG_PRINT(apiUri.Host + "\n");
-    DEBUG_PRINT(apiUri.Port + "\n");
-    DEBUG_PRINT(apiUri.Path + "\n");
-    DEBUG_PRINT(apiUri.QueryString + "\n");
-
     RestClient client = RestClient(apiUri.Host.c_str());
     String response = "";
 
@@ -252,7 +281,7 @@ const char* SwitchScheduler::GetAstronomyDataResponse()
     }
 }
 
-time_t SwitchScheduler::GetTime(const char* timeString)
+time_t SwitchScheduler::GetTime(String timeString)
 {
     if (timeString == "sunrise")
     {
@@ -264,6 +293,6 @@ time_t SwitchScheduler::GetTime(const char* timeString)
     }
 
     return Sparky::ParseTimeFromString(
-        timeString,
+        timeString.c_str(),
         configuration->TimezoneOffset);
 }
