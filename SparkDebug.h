@@ -1,3 +1,8 @@
+#define ARDUINO
+#define SPARK_DEBUG
+
+
+
 #ifndef SPARK_DEBUG_H_
 #define SPARK_DEBUG_H_
 

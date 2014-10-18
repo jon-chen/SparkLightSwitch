@@ -8,24 +8,24 @@ class LightTimer
 
         // Method that configures the initial state of the app. This method
         // assumes that the parameters have been configured previously.
-        void Initialize();
+        void initialize();
 
-        void AddSchedule(SwitchSchedulerTask*);
+        void addSchedule(SwitchSchedulerTask*);
 
         // Initailize the pin used to control the outlet switch.
         void setOutletSwitchPin(int pin);
 
-        void Tick();
+        void tick();
 
         // Initialize when teh app turns on the outlet switch.
-        void setOutletSwitchOnTime(String timeString);
+        // void setOutletSwitchOnTime(String timeString);
 
         // Initalize when the app turns off the outlet switch.
-        void setOutletSwitchOffTime(String timeString);
+        // void setOutletSwitchOffTime(String timeString);
 
         // Gets the current state of the app and sets the string variable
         // passed in to the method.
-        const char* GetCurrentState();
+        const char* getCurrentState();
 
         // Accepts a JSON string and parses out configuration options that
         // can be set remotely. See configKeys for a list of settings that
@@ -34,11 +34,11 @@ class LightTimer
 
         // Check to see if the outlet switch needs to be turned on. If so,
         // turn it on!
-        void toggleOutletSwitchOn();
+        // void toggleOutletSwitchOn();
 
         // Check ot see if the outlet switch needs to be turned off. If so,
         // turn it off!
-        void toggleOutletSwitchOff();
+        // void toggleOutletSwitchOff();
 
         // Toggle the outlet switch on or off based on the parameter. True
         // for on, false otherwise.
@@ -50,6 +50,8 @@ class LightTimer
 
         // Checks to see if the outlet switch should be toggled on.
         // bool shouldOutletSwitchBeEnabled();
+
+        void schedulerCallback(SwitchSchedulerEvent);
     private:
         SwitchScheduler* scheduler;
 
@@ -78,10 +80,10 @@ class LightTimer
         // String sunsetApiCheckTime;
 
         // When the app turns on the outlet switch.
-        String outletSwitchOnTime;
+        // String outletSwitchOnTime;
 
         // When the app turns off the outlet switch.
-        String outletSwitchOffTime;
+        // String outletSwitchOffTime;
 
         // Pin used to control whether the outlet switch is enabled or not.
         int outletSwitchPin;
@@ -100,8 +102,8 @@ class LightTimer
             OutletSwitchState = 0,
             TimezoneOffset,
             SunsetApiUrl,
-            SunsetApiCheckTime,
-            OutletSwitchOffTime
+            SunsetApiCheckTime
+            // OutletSwitchOffTime
         };
 
         // Configuration keys for the JSON object used to configure settings
@@ -111,8 +113,8 @@ class LightTimer
             "OutletSwitchState",
             "TimezoneOffset",
             "SunsetApiUrl",
-            "SunsetApiCheckTime",
-            "OutletSwitchOffTime"
+            "SunsetApiCheckTime"
+            // "OutletSwitchOffTime"
         };
 
         // True if the app should turn on the outlet switch by using the

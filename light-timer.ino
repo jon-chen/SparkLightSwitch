@@ -1,6 +1,3 @@
-#define ARDUINO
-#define SPARK_DEBUG
-
 #include "SparkDebug.h"
 #include "Sparky.h"
 #include "LightTimer.h"
@@ -23,15 +20,16 @@ char currentState[StringVariableMaxLength] = "{\"error\":\"not initialized\"}";
 void setup()
 {
     config = new SwitchSchedulerConfiguration();
-    config->AstronomyApiUrl = astronomyApiUrl;
-    config->AstronomyApiCheckTime = sunsetApiCheckTime;
-    config->TimezoneOffset = timezoneOffset;
+    config->astronomyApiUrl = astronomyApiUrl;
+    config->astronomyApiCheckTime = sunsetApiCheckTime;
+    config->timezoneOffset = timezoneOffset;
 
     timer = new LightTimer(config);
     timer->setOutletSwitchPin(outletSwitchPin);
-    timer->AddSchedule(new SwitchSchedulerTask(outletSwitchOnTime, outletSwitchOffTime));
-    timer->AddSchedule(new SwitchSchedulerTask("19:40", "19:41"));
-    timer->AddSchedule(new SwitchSchedulerTask("19:42", "19:43"));
+    timer->addSchedule(new SwitchSchedulerTask(outletSwitchOnTime, outletSwitchOffTime, &schedulerHandler));
+    // timer->addSchedule(new SwitchSchedulerTask("10:42", "10:43", &schedulerHandler));
+    // timer->addSchedule(new SwitchSchedulerTask("10:44", "10:45", &schedulerHandler));
+    // timer->addSchedule(new SwitchSchedulerTask("10:46", "10:47", &schedulerHandler));
 
     Spark.function("configure", configureHandler);
     Spark.function("identify", identifyHandler);
@@ -49,12 +47,12 @@ void setup()
     Serial.print(Time.timeStr());
     #endif
 
-    timer->Initialize();
+    timer->initialize();
 }
 
 void loop()
 {
-    timer->Tick();
+    timer->tick();
 
     // // Try to get the sunset data if it's time.
     // timer.retrieveSunsetData();
@@ -65,7 +63,7 @@ void loop()
     // Turn off the outlet switch if it's time.
     // timer->toggleOutletSwitchOff();
 
-    char* tmp = const_cast<char*>(timer->GetCurrentState());
+    char* tmp = const_cast<char*>(timer->getCurrentState());
     strcpy(currentState, tmp);
 
     // DEBUG_PRINT(currentState);
@@ -73,6 +71,11 @@ void loop()
 
     // Wait 10 seconds
     delay(10000);
+}
+
+void schedulerHandler(int state)
+{
+    timer->schedulerCallback(static_cast<SwitchSchedulerEvent>(state));
 }
 
 int configureHandler(String command)

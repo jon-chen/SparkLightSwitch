@@ -1,26 +1,14 @@
 #ifndef SWITCH_SCHEDULER_H_
 #define SWITCH_SCHEDULER_H_
 
-// #include <functional>
 #include "application.h"
 #include "SparkTime.h"
 
 struct SwitchSchedulerConfiguration
 {
-    int TimezoneOffset;
-    String AstronomyApiUrl;
-    String AstronomyApiCheckTime;
-};
-
-class SwitchSchedulerTask
-{
-    public:
-        SwitchSchedulerTask(String,String);
-        String StartTime;
-        String EndTime;
-        // function<void(String)> CallbackHandler;
-    private:
-
+    int timezoneOffset;
+    String astronomyApiUrl;
+    String astronomyApiCheckTime;
 };
 
 enum SwitchSchedulerEvent
@@ -29,39 +17,48 @@ enum SwitchSchedulerEvent
     EndEvent
 };
 
+class SwitchSchedulerTask
+{
+    public:
+        SwitchSchedulerTask(String,String,void (*)(int));
+        String startTime;
+        String endTime;
+        void (*callback)(int);
+};
+
 class SwitchScheduler
 {
     public:
         // ctor
         SwitchScheduler(SwitchSchedulerConfiguration*);
 
-        void SetTimezoneOffset(int offset);
+        void setTimezoneOffset(int offset);
 
-        void SetAstronomyApiUrl(String apiUrl);
+        void setAstronomyApiUrl(String apiUrl);
 
-        void SetAstronomyApiCheckTime(String checkTime);
+        void setAstronomyApiCheckTime(String checkTime);
 
-        bool IsUsingAstronomyData();
+        bool isUsingAstronomyData();
 
-        time_t GetSunriseTime();
+        time_t getSunriseTime();
 
-        time_t GetSunsetTime();
+        time_t getSunsetTime();
 
-        unsigned long GetLastTimeSync();
+        unsigned long getLastTimeSync();
 
-        SwitchSchedulerConfiguration* GetConfiguration();
+        SwitchSchedulerConfiguration* getConfiguration();
 
-        SwitchSchedulerTask** GetTasks();
+        SwitchSchedulerTask** getTasks();
 
-        int GetTasksLength();
+        int getTasksLength();
 
-        bool ShouldBeEnabled();
+        bool shouldBeEnabled();
 
         // Adds a task that the scheduler should keep track of.
-        void AddSchedulerTask(SwitchSchedulerTask*);
+        void addSchedulerTask(SwitchSchedulerTask*);
 
         // To be called in the Spark loop.
-        void Tock();
+        void tock();
     private:
         // A day in milliseconds.
         const unsigned long dayInMilliseconds = (24 * 60 * 60 * 1000);
@@ -73,11 +70,13 @@ class SwitchScheduler
         // The last time the time was sync'd.
         unsigned long lastTimeSync;
 
+        // The last time the Tock method was run.
         unsigned long lastLoopCheck;
 
+        // How often
         unsigned long checkLoopInterval = (60 * 1000); // every 1 minute
 
-        bool isUsingAstronomyData;
+        bool _isUsingAstronomyData;
 
         time_t sunriseTime;
 
@@ -90,27 +89,27 @@ class SwitchScheduler
 
         int tasksLength;
 
-        void Initialize(SwitchSchedulerConfiguration*);
+        void initialize(SwitchSchedulerConfiguration*);
 
-        void CheckSchedulerTasks();
+        void checkSchedulerTasks();
 
-        void CheckSchedulerTask(SwitchSchedulerTask*, String, SwitchSchedulerEvent);
+        void checkSchedulerTask(SwitchSchedulerTask*, String, SwitchSchedulerEvent);
 
         // Try to sync the time. It will only sync once a day.
-        void SyncTime();
+        void syncTime();
 
         // Try to get the astronomy data. It will only get it at the
         // configured time.
-        void RetrieveAstronomyData();
+        void retrieveAstronomyData();
 
         // Retrieve the sunset data from the API and parse it into
         // a unix timestamp.
-        bool ParseAndSetAstronomyData();
+        bool parseAndSetAstronomyData();
 
         // Retrieve the sunset data from the API.
-        const char* GetAstronomyDataResponse();
+        const char* getAstronomyDataResponse();
 
-        time_t GetTime(String);
+        time_t getTime(String);
 };
 
 #endif // SWITCH_SCHEDULER_H_

@@ -25,7 +25,6 @@ void Sparky::DoTheRainbow()
 
 time_t Sparky::ParseTimeFromToday(int hour, int minute, int offset)
 {
-    // For simplicity, we're assuming that the times are for today.
     time_t t = Time.now();
     struct tm* timeinfo;
 

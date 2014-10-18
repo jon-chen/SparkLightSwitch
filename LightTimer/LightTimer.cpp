@@ -10,25 +10,24 @@ LightTimer::LightTimer(SwitchSchedulerConfiguration* config)
     scheduler = new SwitchScheduler(config);
 }
 
-void LightTimer::Initialize()
+void LightTimer::initialize()
 {
     // If the switch is off but should be on by our calculations.
-    if (scheduler->ShouldBeEnabled() && !getOutletSwitchState())
+    if (scheduler->shouldBeEnabled() && !getOutletSwitchState())
     {
         DEBUG_PRINT("Enabling switch since it should be on.\n");
         toggleOutletSwitch(true);
     }
 }
 
-void LightTimer::AddSchedule(SwitchSchedulerTask* task)
+void LightTimer::addSchedule(SwitchSchedulerTask* task)
 {
-    // TODO: Add callback handler to task
-    scheduler->AddSchedulerTask(task);
+    scheduler->addSchedulerTask(task);
 }
 
-void LightTimer::Tick()
+void LightTimer::tick()
 {
-    scheduler->Tock();
+    scheduler->tock();
 }
 
 void LightTimer::setOutletSwitchPin(int pin)
@@ -40,20 +39,20 @@ void LightTimer::setOutletSwitchPin(int pin)
     toggleOutletSwitch(false);
 }
 
-void LightTimer::setOutletSwitchOnTime(String timeString)
-{
-    outletSwitchOnTime = timeString;
-}
+// void LightTimer::setOutletSwitchOnTime(String timeString)
+// {
+//     outletSwitchOnTime = timeString;
+// }
+//
+// void LightTimer::setOutletSwitchOffTime(String timeString)
+// {
+//     outletSwitchOffTime = timeString;
+// }
 
-void LightTimer::setOutletSwitchOffTime(String timeString)
-{
-    outletSwitchOffTime = timeString;
-}
-
-const char* LightTimer::GetCurrentState()
+const char* LightTimer::getCurrentState()
 {
     ArduinoJson::Generator::JsonObject<10> root;
-    SwitchSchedulerConfiguration* config = scheduler->GetConfiguration();
+    SwitchSchedulerConfiguration* config = scheduler->getConfiguration();
 
     // current time
     root["time"] = Time.now();
@@ -61,32 +60,32 @@ const char* LightTimer::GetCurrentState()
     // switch schedules
     ArduinoJson::Generator::JsonArray<10> tasksArray;
     ArduinoJson::Generator::JsonObject<2> taskObjects[10];
-    int tasksLength = scheduler->GetTasksLength();
-    SwitchSchedulerTask** tasks = scheduler->GetTasks();
+    int tasksLength = scheduler->getTasksLength();
+    SwitchSchedulerTask** tasks = scheduler->getTasks();
 
     for (int i = 0; i < tasksLength; i++)
     {
-        taskObjects[i]["startTime"] = tasks[i]->StartTime.c_str();
-        taskObjects[i]["endTime"] = tasks[i]->EndTime.c_str();
+        taskObjects[i]["startTime"] = tasks[i]->startTime.c_str();
+        taskObjects[i]["endTime"] = tasks[i]->endTime.c_str();
         tasksArray.add(taskObjects[i]);
     }
 
     root["schedules"] = tasksArray;
 
     // is using astronomy data?
-    root["useAstronomyData"] = scheduler->IsUsingAstronomyData();
-    root["sunsetTime"] = scheduler->GetSunsetTime();
-    root["sunriseTime"] = scheduler->GetSunriseTime();
+    root["useAstronomyData"] = scheduler->isUsingAstronomyData();
+    root["sunsetTime"] = scheduler->getSunsetTime();
+    root["sunriseTime"] = scheduler->getSunriseTime();
 
     // timezone offset
-    root["timezoneOffset"] = config->TimezoneOffset;
+    root["timezoneOffset"] = config->timezoneOffset;
 
     // last time sync
     // root["lastTimeSync"] = utoa(scheduler->GetLastTimeSync());
 
     root["currentSwitchState"] = getOutletSwitchState();
 
-    root["shouldSwitchBeEnabled"] = scheduler->ShouldBeEnabled();
+    root["shouldSwitchBeEnabled"] = scheduler->shouldBeEnabled();
 
     //
     // DEBUG_PRINT("Current time: ");
@@ -156,26 +155,26 @@ int LightTimer::configureHandler(String command)
     value = root[configKeys[TimezoneOffset]];
     if (value.success())
     {
-        scheduler->SetTimezoneOffset(value);
+        scheduler->setTimezoneOffset(value);
     }
 
     value = root[configKeys[SunsetApiUrl]];
     if (value.success())
     {
-        scheduler->SetAstronomyApiUrl((const char*)value);
+        scheduler->setAstronomyApiUrl((const char*)value);
     }
 
     value = root[configKeys[SunsetApiCheckTime]];
     if (value.success())
     {
-        scheduler->SetAstronomyApiCheckTime((const char*)value);
+        scheduler->setAstronomyApiCheckTime((const char*)value);
     }
 
-    value = root[configKeys[OutletSwitchOffTime]];
-    if (value.success())
-    {
-        setOutletSwitchOffTime((const char*)value);
-    }
+    // value = root[configKeys[OutletSwitchOffTime]];
+    // if (value.success())
+    // {
+    //     setOutletSwitchOffTime((const char*)value);
+    // }
 
     return 1;
 }
@@ -231,6 +230,11 @@ void LightTimer::toggleOutletSwitch(bool isEnabled)
 bool LightTimer::getOutletSwitchState()
 {
     return outletSwitchState;
+}
+
+void LightTimer::schedulerCallback(SwitchSchedulerEvent state)
+{
+    toggleOutletSwitch(state == StartEvent);
 }
 
 // bool LightTimer::shouldOutletSwitchBeEnabled()
