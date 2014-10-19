@@ -5,10 +5,10 @@
 #include "rest_client.h"
 #include "SwitchScheduler.h"
 
-SwitchSchedulerTask::SwitchSchedulerTask(String startTime, String endTime, void (*pCallback)(int))
+SwitchSchedulerTask::SwitchSchedulerTask(String start, String end, void (*pCallback)(int))
 {
-    startTime = startTime;
-    endTime = endTime;
+    startTime = start;
+    endTime = end;
     callback = pCallback;
 }
 
@@ -110,6 +110,8 @@ bool SwitchScheduler::shouldBeEnabled()
 
 void SwitchScheduler::addSchedulerTask(SwitchSchedulerTask* task)
 {
+    DEBUG_PRINT(task->startTime);
+
     // check to see if we need to retrieve astronomy data
     if (task->startTime == "sunrise" ||
         task->startTime == "sunset" ||
@@ -141,6 +143,7 @@ void SwitchScheduler::tock()
         // Try to get the astronomy data if it's time.
         retrieveAstronomyData();
 
+        // Turn on/off the outlet switch if it's time.
         checkSchedulerTasks();
 
         lastLoopCheck = now;

@@ -40,18 +40,24 @@ class SwitchScheduler
 
         bool isUsingAstronomyData();
 
+        // Today's sunrise time.
         time_t getSunriseTime();
 
+        // Today's sunset time.
         time_t getSunsetTime();
 
+        // The last time the spark core sync'd itself.
         unsigned long getLastTimeSync();
 
         SwitchSchedulerConfiguration* getConfiguration();
 
+        // Get a list of currently registered scheduler tasks.
         SwitchSchedulerTask** getTasks();
 
+        // Get the length of the task array.
         int getTasksLength();
 
+        // Checks to see if the outlet switch should be toggled on.
         bool shouldBeEnabled();
 
         // Adds a task that the scheduler should keep track of.
