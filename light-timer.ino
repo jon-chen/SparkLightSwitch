@@ -44,21 +44,21 @@ void setup()
     Spark.function("identify", identifyHandler);
     Spark.variable("current", &currentState, STRING);
 
-    // #ifdef SPARK_DEBUG
-    // RGB.control(true);
-    // RGB.color(255,255,0);
-    //
+    #ifdef SPARK_DEBUG
+    RGB.control(true);
+    RGB.color(255,255,0);
+
     Serial.begin(9600);
-    //
-    // while(!Serial.available())
-    // {
-    //     SPARK_WLAN_Loop();
-    // }
-    //
-    // RGB.control(false);
+
+    while(!Serial.available())
+    {
+        SPARK_WLAN_Loop();
+    }
+
+    RGB.control(false);
     Serial.print("System started...");
     Serial.print(rtc->ISODateString(rtc->now()));
-    // #endif
+    #endif
 
 
     while (!rtc->hasSynced())

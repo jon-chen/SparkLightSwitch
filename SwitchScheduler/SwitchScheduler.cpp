@@ -1,3 +1,4 @@
+#include <math.h>
 #include "SparkDebug.h"
 #include "Sparky.h"
 #include "SwitchScheduler.h"
@@ -151,13 +152,6 @@ bool SwitchScheduler::shouldBeToggled()
         time_t toggleOn = getTime(tasks[i]->startTime);
         time_t toggleOff = getTime(tasks[i]->endTime);
 
-        DEBUG_PRINT("Toggle On: ");
-        DEBUG_PRINT(Sparky::ISODateString(rtc, toggleOn));
-        DEBUG_PRINT("\n");
-        DEBUG_PRINT("Toggle Off: ");
-        DEBUG_PRINT(Sparky::ISODateString(rtc, toggleOff));
-        DEBUG_PRINT("\n\n");
-
         if (now > toggleOn && now < toggleOff)
         {
             return true;
@@ -191,10 +185,24 @@ void SwitchScheduler::tock()
         return;
     }
 
+    if (lastLoopCheck == 0)
+    {
+        uint32_t tNow = rtc->now();
+        while (rtc->second(tNow) != 0)
+        {
+            DEBUG_PRINT("Second: ");
+            DEBUG_PRINT(rtc->second(tNow));
+            DEBUG_PRINT("\n");
+            DEBUG_PRINT(rtc->ISODateString(rtc->now()) + "\n");
+            SPARK_WLAN_Loop();
+            delay(1000);
+            tNow = rtc->now();
+        }
+    }
+
     unsigned long now = millis();
 
-    // TODO: Figure out how to make this to 00 seconds.
-    if (now - lastLoopCheck > checkLoopInterval ||
+    if (now - lastLoopCheck >= checkLoopInterval ||
         lastLoopCheck == 0)
     {
         DEBUG_PRINT("Tock...");
