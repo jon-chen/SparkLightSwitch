@@ -1,5 +1,6 @@
 #include "SparkDebug.h"
 #include "Sparky.h"
+#include "SparkTime.h"
 #include "LightTimer.h"
 
 #ifdef SPARK_DEBUG
@@ -9,42 +10,67 @@ const String astronomyApiUrl = "http://api.wunderground.com/api/91329161b08b1483
 #endif
 
 LightTimer* timer;
+UDP* udpClient;
+SparkTime* rtc;
 SwitchSchedulerConfiguration* config;
 char currentState[StringVariableMaxLength] = "{\"error\":\"not initialized\"}";
 
 void setup()
 {
+    udpClient = new UDP();
+    rtc = new SparkTime();
+
+    Time.zone(-5);
+    rtc->setTimeZone(-5); // est
+    rtc->begin(udpClient, "north-america.pool.ntp.org");
+
+    // TODO: retrieve intial configuration from the web
     config = new SwitchSchedulerConfiguration();
     config->astronomyApiUrl = astronomyApiUrl;
     config->astronomyApiCheckTime = "03:00";
-    config->timezoneOffset = -5; // EST
+    config->isEnabled = true;
+    // config->homeOnlyModeEnabled = false;
+    config->homeOnlyModeEnabled = true;
 
-    timer = new LightTimer(config);
+    timer = new LightTimer(config, rtc);
     timer->setOutletSwitchPin(D7);
-    timer->addSchedule(new SwitchSchedulerTask("sunset", "23:59", &schedulerHandler));
-    // timer->addSchedule(new SwitchSchedulerTask("10:42", "10:43", &schedulerHandler));
-    // timer->addSchedule(new SwitchSchedulerTask("10:44", "10:45", &schedulerHandler));
-    // timer->addSchedule(new SwitchSchedulerTask("10:46", "10:47", &schedulerHandler));
+    // timer->addSchedule(new SwitchSchedulerTask("sunset", "23:59", &schedulerHandler));
+    timer->addSchedule(new SwitchSchedulerTask("sunset", "02:30", &schedulerHandler));
+    // timer->addSchedule(new SwitchSchedulerTask("23:35", "23:40", &schedulerHandler));
+    // timer->addSchedule(new SwitchSchedulerTask("23:45", "23:50", &schedulerHandler));
+    // timer->addSchedule(new SwitchSchedulerTask("23:55", "00:00", &schedulerHandler));
 
     Spark.function("configure", configureHandler);
     Spark.function("identify", identifyHandler);
     Spark.variable("current", &currentState, STRING);
 
-    #ifdef SPARK_DEBUG
-    RGB.control(true);
-    RGB.color(255,0,0);
-
+    // #ifdef SPARK_DEBUG
+    // RGB.control(true);
+    // RGB.color(255,255,0);
+    //
     Serial.begin(9600);
-
-    while(!Serial.available())
-    {
-        SPARK_WLAN_Loop();
-    }
-
-    RGB.control(false);
+    //
+    // while(!Serial.available())
+    // {
+    //     SPARK_WLAN_Loop();
+    // }
+    //
+    // RGB.control(false);
     Serial.print("System started...");
-    Serial.print(Time.timeStr());
-    #endif
+    Serial.print(rtc->ISODateString(rtc->now()));
+    // #endif
+
+
+    while (!rtc->hasSynced())
+    {
+        DEBUG_PRINT("Has synced: ");
+        DEBUG_PRINT(rtc->hasSynced());
+        DEBUG_PRINT("\n");
+
+        rtc->now();
+        SPARK_WLAN_Loop();
+        delay(1000);
+    }
 
     timer->initialize();
 }
@@ -60,12 +86,13 @@ void loop()
     // DEBUG_PRINT("\n");
 
     // Wait 10 seconds
-    delay(10000);
+    // delay(10000);
 }
 
 void schedulerHandler(int state)
 {
-    timer->schedulerCallback(static_cast<SwitchSchedulerEvent>(state));
+    timer->schedulerCallback(
+        static_cast<SwitchSchedulerEvent::SwitchSchedulerEventEnum>(state));
 }
 
 int configureHandler(String command)

@@ -64,6 +64,15 @@ void SparkTime::setUseEuroDSTRule(bool value) {
   _useEuroDSTRule = value;
 }
 
+int32_t SparkTime::getZoneOffset(uint32_t tnow) {
+    int32_t result = _timezone;
+    if ((_useDST && (!_useEuroDSTRule  && isUSDST(tnow))) ||
+        (_useDST && (_useEuroDSTRule && isEuroDST(tnow)))) {
+        result += 1;
+    }
+    return result;
+}
+
 uint8_t SparkTime::hour(uint32_t tnow) {
   uint8_t hTemp = ((tnow+timeZoneDSTOffset(tnow)) % 86400UL)/3600UL;
   return hTemp;

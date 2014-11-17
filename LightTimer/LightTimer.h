@@ -1,10 +1,20 @@
 #include "SwitchScheduler.h"
 
+struct HomeStatus
+{
+    enum HomeStatusEnum
+    {
+        Home,
+        Away,
+        Reset
+    };
+};
+
 class LightTimer
 {
     public:
         // ctor.
-        LightTimer(SwitchSchedulerConfiguration*);
+        LightTimer(SwitchSchedulerConfiguration*, SparkTime*);
 
         // Method that configures the initial state of the app. This method
         // assumes that the parameters have been configured previously.
@@ -51,9 +61,10 @@ class LightTimer
         // Checks to see if the outlet switch should be toggled on.
         // bool shouldOutletSwitchBeEnabled();
 
-        void schedulerCallback(SwitchSchedulerEvent);
+        void schedulerCallback(SwitchSchedulerEvent::SwitchSchedulerEventEnum);
     private:
         SwitchScheduler* scheduler;
+        SparkTime* rtc;
 
         // Reference to SparkTime. Mostly using it just for the DST testing
         // capabilities.
@@ -97,23 +108,34 @@ class LightTimer
 
         // Used by the code to pull out the right configuration key from
         // the configKeys string array.
-        enum LightTimerConfig
+        struct LightTimerConfig
         {
-            OutletSwitchState = 0,
-            TimezoneOffset,
-            SunsetApiUrl,
-            SunsetApiCheckTime
-            // OutletSwitchOffTime
+            enum LightTimerConfigEnum
+            {
+                IsToggled = 0,
+                // TimezoneOffset,
+                SunsetApiUrl,
+                SunsetApiCheckTime,
+                IsSchedulerEnabled,
+                IsHomeOnlyModeEnabled,
+                HomeStatus,
+                MobileId
+                // OutletSwitchOffTime
+            };
         };
 
         // Configuration keys for the JSON object used to configure settings
         // remotely.
-        const char* configKeys[5] =
+        const char* configKeys[8] =
         {
-            "OutletSwitchState",
-            "TimezoneOffset",
+            "IsToggled",
+            // "TimezoneOffset",
             "SunsetApiUrl",
-            "SunsetApiCheckTime"
+            "SunsetApiCheckTime",
+            "IsSchedulerEnabled",
+            "IsHomeOnlyModeEnabled",
+            "HomeStatus",
+            "MobileId"
             // "OutletSwitchOffTime"
         };
 

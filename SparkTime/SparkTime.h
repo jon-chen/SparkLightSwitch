@@ -45,6 +45,8 @@ public:
   void setUseDST(bool value);
   void setUseEuroDSTRule(bool value);
 
+  int32_t getZoneOffset(uint32_t tnow);
+
   uint32_t now();
   uint32_t nowNoUpdate();
   uint32_t nowEpoch();

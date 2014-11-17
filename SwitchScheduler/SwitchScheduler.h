@@ -2,19 +2,24 @@
 #define SWITCH_SCHEDULER_H_
 
 #include "application.h"
+#include "arraylist.h"
 #include "SparkTime.h"
 
 struct SwitchSchedulerConfiguration
 {
-    int timezoneOffset;
     String astronomyApiUrl;
     String astronomyApiCheckTime;
+    bool isEnabled;
+    bool homeOnlyModeEnabled;
 };
 
-enum SwitchSchedulerEvent
+struct SwitchSchedulerEvent
 {
-    StartEvent,
-    EndEvent
+    enum SwitchSchedulerEventEnum
+    {
+        StartEvent,
+        EndEvent
+    };
 };
 
 class SwitchSchedulerTask
@@ -30,21 +35,39 @@ class SwitchScheduler
 {
     public:
         // ctor
-        SwitchScheduler(SwitchSchedulerConfiguration*);
-
-        void setTimezoneOffset(int offset);
+        SwitchScheduler(SwitchSchedulerConfiguration*, SparkTime*);
 
         void setAstronomyApiUrl(String apiUrl);
 
         void setAstronomyApiCheckTime(String checkTime);
 
+        void setIsEnabled(bool enabled);
+
+        void setHomeOnlyModeEnabled(bool enabled);
+
         bool isUsingAstronomyData();
+
+        bool isDst();
+
+        // Enabled and "Home Only Mode" is disabled or enabled and people
+        // are home.
+        bool isSchedulerEnabled();
+
+        SparkTime* getTime();
 
         // Today's sunrise time.
         time_t getSunriseTime();
 
         // Today's sunset time.
         time_t getSunsetTime();
+
+        int getCurrentHomeCount();
+
+        void setHomeStatus(const char* mobileId);
+
+        void setAwayStatus(const char* mobileId);
+
+        void resetHomeStatus();
 
         // The last time the spark core sync'd itself.
         unsigned long getLastTimeSync();
@@ -57,8 +80,8 @@ class SwitchScheduler
         // Get the length of the task array.
         int getTasksLength();
 
-        // Checks to see if the outlet switch should be toggled on.
-        bool shouldBeEnabled();
+        // Checks to see if the switch should be toggled on or off.
+        bool shouldBeToggled();
 
         // Adds a task that the scheduler should keep track of.
         void addSchedulerTask(SwitchSchedulerTask*);
@@ -68,10 +91,6 @@ class SwitchScheduler
     private:
         // A day in milliseconds.
         const unsigned long dayInMilliseconds = (24 * 60 * 60 * 1000);
-
-        // Reference to SparkTime. Mostly using it just for the DST testing
-        // capabilities.
-        SparkTime rtc;
 
         // The last time the time was sync'd.
         unsigned long lastTimeSync;
@@ -89,17 +108,24 @@ class SwitchScheduler
         // The time that the sunset will occur for today.
         time_t sunsetTime;
 
+        arraylist<const char*>* homeMobileIds;
+
+        SparkTime* rtc;
+
         SwitchSchedulerConfiguration* configuration;
 
+        // TODO: Convert this to arraylist
         SwitchSchedulerTask** tasks;
 
         int tasksLength;
 
         void initialize(SwitchSchedulerConfiguration*);
 
+        void checkToggledState();
+
         void checkSchedulerTasks();
 
-        void checkSchedulerTask(SwitchSchedulerTask*, String, SwitchSchedulerEvent);
+        void checkSchedulerTask(SwitchSchedulerTask*, String, SwitchSchedulerEvent::SwitchSchedulerEventEnum);
 
         // Try to sync the time. It will only sync once a day.
         void syncTime();

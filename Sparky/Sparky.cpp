@@ -1,5 +1,7 @@
 #include <math.h>
 #include "application.h"
+#include "SparkDebug.h"
+#include "SparkTime.h"
 #include "Sparky.h"
 
 void Sparky::DoTheRainbow()
@@ -23,9 +25,10 @@ void Sparky::DoTheRainbow()
     RGB.control(false);
 }
 
-time_t Sparky::ParseTimeFromToday(int hour, int minute, int offset)
+time_t Sparky::ParseTimeFromToday(SparkTime* rtc, int hour, int minute)
 {
     time_t t = Time.now();
+    int32_t offset = rtc->getZoneOffset(rtc->now());
     struct tm* timeinfo;
 
     // Alter the timestamp with the given parameters.
@@ -34,15 +37,21 @@ time_t Sparky::ParseTimeFromToday(int hour, int minute, int offset)
     timeinfo->tm_min = minute;
     timeinfo->tm_sec = 0;
 
+    // If it's 3 AM or earlier, consider it part of yesterday.
+    if (rtc->hour(rtc->now()) < 3 && hour > 3)
+    {
+        timeinfo->tm_mday -= 1;
+    }
+
     // Return unix timestamp of sunset.
     return mktime(timeinfo);
 }
 
-time_t Sparky::ParseTimeFromString(const char* data, int offset)
+time_t Sparky::ParseTimeFromString(SparkTime* rtc, const char* data)
 {
     int hour, minute;
     ParseTime(data, &hour, &minute);
-    return ParseTimeFromToday(hour, minute, offset);
+    return ParseTimeFromToday(rtc, hour, minute);
 }
 
 void Sparky::ParseTime(const char* data, int* hour, int* minute)
@@ -54,4 +63,35 @@ void Sparky::ParseTimestamp(time_t timestamp, int* hour, int* minute)
 {
     *hour = Time.hour(timestamp);
     *minute = Time.minute(timestamp);
+}
+
+String Sparky::ISODateString(SparkTime* rtc, time_t timestamp)
+{
+    int32_t offset = rtc->getZoneOffset(rtc->now());
+    struct tm* timeinfo;
+
+    // Alter the timestamp with the given parameters.
+    timeinfo = localtime(&timestamp);
+    String ISOString;
+    ISOString += Time.year(timestamp);
+    ISOString += "-";
+    ISOString += Time.month(timestamp);
+    ISOString += "-";
+    ISOString += Time.day(timestamp);
+    ISOString += "T";
+    ISOString += Time.hour(timestamp);
+    ISOString += ":";
+    ISOString += Time.minute(timestamp);
+    ISOString += ":";
+    ISOString += Time.second(timestamp);
+
+    // Guard against timezone problems
+    if (offset>-24 && offset<24) {
+      if (offset < 0) {
+        ISOString = ISOString + "-" + _digits[-offset] + "00";
+      } else {
+        ISOString = ISOString + "+" + _digits[offset] + "00";
+      }
+    }
+    return ISOString;
 }
