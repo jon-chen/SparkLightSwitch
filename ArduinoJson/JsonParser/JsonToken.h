@@ -18,13 +18,13 @@ namespace ArduinoJson
 
             // Create a "null" pointer
             JsonToken()
-                : _token(0)
+                : token(0)
             {
             }
 
             // Create a pointer to the specified JSON token
             JsonToken(char* json, jsmntok_t* token)
-                : _json(json), _token(token)
+                : json(json), token(token)
             {
             }
 
@@ -34,13 +34,13 @@ namespace ArduinoJson
             // Get the number of children tokens
             int childrenCount()
             {
-                return _token->size;
+                return token->size;
             }
 
             // Get a pointer to the first child of the current token
             JsonToken firstChild() const
             {
-                return JsonToken(_json, _token + 1);
+                return JsonToken(json, token + 1);
             }
 
             // Get a pointer to the next sibling token (ie skiping the children tokens)
@@ -49,37 +49,37 @@ namespace ArduinoJson
             // Test equality
             bool operator!=(const JsonToken& other) const
             {
-                return _token != other._token;
+                return token != other.token;
             }
 
             // Tell if the pointer is "null"
             bool isValid()
             {
-                return _token != 0;
+                return token != 0;
             }
 
             // Tell if the JSON token is a JSON object
             bool isObject()
             {
-                return _token != 0 && _token->type == JSMN_OBJECT;
+                return token != 0 && token->type == JSMN_OBJECT;
             }
 
             // Tell if the JSON token is a JSON array
             bool isArray()
             {
-                return _token != 0 && _token->type == JSMN_ARRAY;
+                return token != 0 && token->type == JSMN_ARRAY;
             }
 
             // Tell if the JSON token is a primitive
             bool isPrimitive()
             {
-                return _token != 0 && _token->type == JSMN_PRIMITIVE;
+                return token != 0 && token->type == JSMN_PRIMITIVE;
             }
 
             // Tell if the JSON token is a string
             bool isString()
             {
-                return _token != 0 && _token->type == JSMN_STRING;
+                return token != 0 && token->type == JSMN_STRING;
             }
 
             // Explicit wait to create a "null" JsonToken
@@ -89,8 +89,8 @@ namespace ArduinoJson
             }
 
         private:
-            char* _json;
-            jsmntok_t* _token;
+            char* json;
+            jsmntok_t* token;
             
             static char unescapeChar(char c);
             static void unescapeString(char* s);

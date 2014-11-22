@@ -5,19 +5,19 @@
 
 #pragma once
 
-#ifndef ARDUINO
-
-class Print;
-
-class Printable
-{
-public:
-
-    virtual size_t printTo(Print& p) const = 0;
-};
-
-#else
-
-#include <Printable.h>
-
-#endif
+// #ifndef ARDUINO
+//
+// class Print;
+//
+// class Printable
+// {
+// public:
+//
+//     virtual size_t printTo(Print& p) const = 0;
+// };
+//
+// #else
+//
+// #include <Printable.h>
+//
+// #endif

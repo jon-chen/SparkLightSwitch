@@ -6,7 +6,7 @@
 #pragma once
 
 #include "JsonPrintable.h"
-#include "JsonValue.h"
+#include "JsonValueGen.h"
 
 namespace ArduinoJson
 {

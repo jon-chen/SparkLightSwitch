@@ -5,7 +5,8 @@
 
 #pragma once
 
-#include "Print.h"
+// #include "Print.h"
+#include "application.h"
 #include "Printable.h"
 #include "IndentedPrint.h"
 
@@ -19,7 +20,7 @@ namespace ArduinoJson
         {
         public:
 
-            // Generates the compact JSON string and sends it to a Print stream 
+            // Generates the compact JSON string and sends it to a Print stream
             virtual size_t printTo(Print& p) const = 0;
 
             // Generates the compact JSON string and writes it in a buffer

@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "application.h"
 #include "JsonArray.h"
 #include "JsonObject.h"
 
@@ -19,14 +20,14 @@ namespace ArduinoJson
 
             // Create a JSON parser using the provided buffer
             JsonParserBase(jsmntok_t* tokens, int maxTokens)
-                : _tokens(tokens), _maxTokens(maxTokens)
+                : tokens(tokens), maxTokens(maxTokens)
             {
             }
 
             // Parse the JSON string and return a array
             //
             // The content of the string may be altered to add '\0' at the
-            // end of string tokens            
+            // end of string tokens
             JsonValue parse(char* json);
 
             // Obsolete: use parse() instead
@@ -42,8 +43,8 @@ namespace ArduinoJson
             }
 
         private:
-            jsmntok_t* _tokens;
-            int _maxTokens;
+            jsmntok_t* tokens;
+            int maxTokens;
         };
     }
 }

@@ -3,6 +3,7 @@
 * Benoit Blanchon 2014 - MIT License
 */
 
+#include "SparkDebug.h"
 #include "JsonParserBase.h"
 #include "JsonToken.h"
 
@@ -13,8 +14,14 @@ JsonValue JsonParserBase::parse(char* json)
     jsmn_parser parser;
     jsmn_init(&parser);
 
-    if (JSMN_SUCCESS != jsmn_parse(&parser, json, _tokens, _maxTokens))
+    jsmnerr_t status = jsmn_parse(&parser, json, tokens, maxTokens);
+
+    DEBUG_PRINT("JSON parse status: ");
+    DEBUG_PRINT(status);
+    DEBUG_PRINT("\n");
+
+    if (JSMN_SUCCESS != status)
         return JsonToken::null();
 
-    return JsonToken(json, _tokens);
+    return JsonToken(json, tokens);
 }

@@ -5,7 +5,8 @@
 
 #pragma once
 
-#include "Print.h"
+// #include "Print.h"
+#include "application.h"
 #include "IndentedPrint.h"
 
 namespace ArduinoJson
@@ -26,7 +27,7 @@ namespace ArduinoJson
 
             virtual size_t write(uint8_t);
 
-        private:            
+        private:
             uint8_t _previousChar;
             IndentedPrint& _sink;
             bool _inString;

@@ -5,6 +5,7 @@
 
 #pragma once
 
+
 #include "JsonParserBase.h"
 
 namespace ArduinoJson
@@ -24,12 +25,12 @@ namespace ArduinoJson
         {
         public:
             JsonParser()
-                : JsonParserBase(_tokens, MAX_TOKENS)
+                : JsonParserBase(tokens, MAX_TOKENS)
             {
             }
 
         private:
-            jsmntok_t _tokens[MAX_TOKENS];
+            jsmntok_t tokens[MAX_TOKENS];
         };
     }
 }

@@ -5,7 +5,8 @@
 
 #pragma once
 
-#include "Print.h"
+#include "application.h"
+// #include "Print.h"
 
 namespace ArduinoJson
 {
@@ -42,7 +43,7 @@ namespace ArduinoJson
             uint8_t _level : 4;
             uint8_t _tabSize : 3;
             bool _isNewLine : 1;
-            
+
             size_t writeTabs();
 
             static const int MAX_LEVEL = 15; // because it's only 4 bits
@@ -50,4 +51,3 @@ namespace ArduinoJson
         };
     }
 }
-
