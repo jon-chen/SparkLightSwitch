@@ -1,6 +1,5 @@
 light-timer.ino
 SparkDebug.h
-ArrayList/arraylist.h
 DNSClient/firmware/dnsclient.h
 DNSClient/firmware/dnsclient.cpp
 DNSClient/firmware/myUDP.h
@@ -46,10 +45,11 @@ LightTimer/LightTimer.h
 LightTimer/LightTimer.cpp
 RestClient/rest_client.h
 RestClient/rest_client.cpp
+SparkyLibrary/arraylist.h
+SparkyLibrary/Sparky.h
+SparkyLibrary/Sparky.cpp
+SparkyLibrary/Uri.h
 SparkTime/firmware/SparkTime.h
 SparkTime/firmware/SparkTime.cpp
-Sparky/Sparky.h
-Sparky/Sparky.cpp
 SwitchScheduler/SwitchScheduler.h
 SwitchScheduler/SwitchScheduler.cpp
-Uri/Uri.h
