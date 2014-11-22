@@ -1,0 +1,7 @@
+{
+"name": "dnsclient",
+"author": "chris huitema",
+"license": "Apache License, version 2.0",
+"version": "0.0.13",
+"description": "DNS Lookup Client ported from Arduino to Spark"
+}
