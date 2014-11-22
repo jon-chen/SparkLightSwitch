@@ -12,7 +12,7 @@
 
 
 #include "application.h"
-#include "DNSClient.h"
+#include "dnsclient.h"
 
 class RestClient {
 

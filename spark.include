@@ -1,9 +1,9 @@
 light-timer.ino
 SparkDebug.h
 ArrayList/arraylist.h
-DNSClient/DNSClient.h
-DNSClient/DNSClient.cpp
-DNSClient/myUDP.h
+DNSClient/firmware/dnsclient.h
+DNSClient/firmware/dnsclient.cpp
+DNSClient/firmware/myUDP.h
 JsonGenerator/EscapedString.cpp
 JsonGenerator/EscapedString.h
 JsonGenerator/IndentedPrint.cpp
