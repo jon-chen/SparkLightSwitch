@@ -46,8 +46,8 @@ LightTimer/LightTimer.h
 LightTimer/LightTimer.cpp
 RestClient/rest_client.h
 RestClient/rest_client.cpp
-SparkTime/SparkTime.h
-SparkTime/SparkTime.cpp
+SparkTime/firmware/SparkTime.h
+SparkTime/firmware/SparkTime.cpp
 Sparky/Sparky.h
 Sparky/Sparky.cpp
 SwitchScheduler/SwitchScheduler.h

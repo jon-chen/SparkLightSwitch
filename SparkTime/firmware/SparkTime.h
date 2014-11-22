@@ -45,6 +45,8 @@ public:
   void setUseDST(bool value);
   void setUseEuroDSTRule(bool value);
 
+  int32_t getZoneOffset(uint32_t tnow);
+
   uint32_t now();
   uint32_t nowNoUpdate();
   uint32_t nowEpoch();
@@ -57,7 +59,7 @@ public:
   uint8_t day(uint32_t tnow);
   uint8_t month(uint32_t tnow);
   uint32_t year(uint32_t tnow);
-  
+
   bool isUSDST(uint32_t tnow); //2nd Sun in Mar to 1st Sun in Nov
   bool isEuroDST(uint32_t tnow); //Last Sun in Mar to last Sun in Oct
 
@@ -76,7 +78,7 @@ public:
   String yearString(uint32_t tnow);
   String ISODateString(uint32_t tnow);
   String ISODateUTCString(uint32_t tnow);
- 
+
 private:
   UDP * _UDPClient;
   char _serverName[SPARKTIMEHOSTNAMESIZE];
