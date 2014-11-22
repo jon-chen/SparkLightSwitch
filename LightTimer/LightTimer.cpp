@@ -169,6 +169,12 @@ int LightTimer::configureHandler(String command)
     //     setOutletSwitchOffTime((const char*)value);
     // }
 
+    // TODO: modify schedule from mobile app
+    // set on/off time - delete all scheduled times
+    // and add array of scheduled times from request
+    // mobile app should have a schedule list view
+    // where schedules can be added/removed/modified
+
     return 1;
 }
 

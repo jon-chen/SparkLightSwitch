@@ -29,13 +29,13 @@ void setup()
     config->astronomyApiUrl = astronomyApiUrl;
     config->astronomyApiCheckTime = "03:00";
     config->isEnabled = true;
-    // config->homeOnlyModeEnabled = false;
-    config->homeOnlyModeEnabled = true;
+    config->homeOnlyModeEnabled = false;
+    // config->homeOnlyModeEnabled = true;
 
     timer = new LightTimer(config, rtc);
     timer->setOutletSwitchPin(D7);
-    // timer->addSchedule(new SwitchSchedulerTask("sunset", "23:59", &schedulerHandler));
-    timer->addSchedule(new SwitchSchedulerTask("sunset", "02:30", &schedulerHandler));
+    timer->addSchedule(new SwitchSchedulerTask("sunset", "23:59", &schedulerHandler));
+    // timer->addSchedule(new SwitchSchedulerTask("sunset", "02:30", &schedulerHandler));
     // timer->addSchedule(new SwitchSchedulerTask("23:35", "23:40", &schedulerHandler));
     // timer->addSchedule(new SwitchSchedulerTask("23:45", "23:50", &schedulerHandler));
     // timer->addSchedule(new SwitchSchedulerTask("23:55", "00:00", &schedulerHandler));
