@@ -10,11 +10,11 @@ struct HomeStatus
     };
 };
 
-class LightTimer
+class LightSwitch
 {
     public:
         // ctor.
-        LightTimer(SwitchSchedulerConfiguration*, SparkTime*);
+        LightSwitch(SwitchSchedulerConfiguration*, SparkTime*);
 
         // Method that configures the initial state of the app. This method
         // assumes that the parameters have been configured previously.
@@ -108,9 +108,9 @@ class LightTimer
 
         // Used by the code to pull out the right configuration key from
         // the configKeys string array.
-        struct LightTimerConfig
+        struct LightSwitchConfig
         {
-            enum LightTimerConfigEnum
+            enum LightSwitchConfigEnum
             {
                 IsToggled = 0,
                 // TimezoneOffset,
